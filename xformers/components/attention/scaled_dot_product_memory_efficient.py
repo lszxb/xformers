@@ -51,7 +51,7 @@ class ScaledDotProductMemoryEfficient(Attention):
     ):
         super().__init__()
 
-        self.attn_drop = nn.Dropout(dropout, inplace=False)
+        self.attn_drop = dropout
         self.causal = causal
         self.seq_len = seq_len
 
