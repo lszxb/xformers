@@ -30,7 +30,7 @@ class ScaledDotProductConfig(AttentionConfig):
 
 
 @register_attention("scaled_dot_product_memory_efficient", ScaledDotProductConfig)
-class ScaledDotProduct(Attention):
+class ScaledDotProductMemoryEfficient(Attention):
     r"""
     Implementing the Scaled Dot-Product attention proposed in
     `Attention is all you need`_, Vaswani et al.
