@@ -51,7 +51,7 @@ class ScaledDotProductMemoryEfficient(Attention):
     ):
         super().__init__()
 
-        self.attn_drop = dropout
+        self.attn_drop = nn.Dropout(p=dropout, inplace=False)
         self.causal = causal
         self.seq_len = seq_len
 
@@ -127,15 +127,15 @@ class ScaledDotProductMemoryEfficient(Attention):
                 )
                 raise NotImplementedError
 
-        # Attend: (B x nh, S, hs) x (B x nh, hs, S) -> (B x nh, S, S)
-        # y = scaled_dot_product_attention(
-        #     q=q, k=k, v=v, att_mask=att_mask, dropout=self.attn_drop
-        # )
-        
-        # [B, S, nh, hs]/[B x nh, S, hs]
         assert len(q.shape) == len(k.shape) == len(v.shape) == 3
-        y = memory_efficient_attention(
-            query=q, key=k.transpose(-1, -2).contiguous(), value=v, attn_bias=att_mask, p=self.attn_drop
-        )
+
+        if att_mask is None:
+            y = memory_efficient_attention(
+                query=q, key=k, value=v, p=self.attn_drop.p if self.training else 0.0
+            )
+        else:
+            y = scaled_dot_product_attention(
+                q=q, k=k, v=v, att_mask=att_mask, dropout=self.attn_drop
+            )
 
         return y
